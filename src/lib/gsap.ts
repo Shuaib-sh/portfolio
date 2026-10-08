@@ -18,8 +18,8 @@ export function useGsapContext(scopeRef: React.RefObject<HTMLElement | null>, an
   useEffect(() => {
     if (!scopeRef.current) return;
 
-    const ctx = gsap.context(() => {
-      animationFn(ctx);
+    const ctx = gsap.context((self) => {
+      animationFn(self);
     }, scopeRef);
 
     return () => {
