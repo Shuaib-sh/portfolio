@@ -71,7 +71,7 @@ export default function RootLayout({
           <CustomCursor />
           <ScrollProgress />
           <Navbar />
-          <div className="flex-1 flex flex-col pt-20">
+          <div className="flex-1 flex flex-col pt-[96px]">
             {children}
           </div>
         </SmoothScrollProvider>

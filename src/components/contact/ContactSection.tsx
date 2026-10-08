@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { profileInfo } from "@/data/social";
 import { Container } from "@/components/ui/Container";
-import { Section } from "@/components/ui/Section";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { FadeIn } from "@/components/motion/MotionPrimitives";
+import { useGsapContext, gsap, ScrollTrigger } from "@/lib/gsap";
 import {
   Mail,
   Send,
@@ -28,6 +26,28 @@ export function ContactSection() {
   });
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const formCardRef = useRef<HTMLDivElement>(null);
+
+  // GSAP ScrollTrigger
+  useGsapContext(sectionRef, () => {
+    if (formCardRef.current) {
+      gsap.fromTo(
+        formCardRef.current,
+        { opacity: 0, y: 35 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: formCardRef.current,
+            start: "top 80%",
+          },
+        }
+      );
+    }
+  }, []);
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(profileInfo.email);
@@ -93,33 +113,38 @@ export function ContactSection() {
   };
 
   return (
-    <Section id="contact" className="py-24 sm:py-32" hasGlow glowColor="sky">
+    <section
+      id="contact"
+      ref={sectionRef}
+      className="py-24 sm:py-32 bg-[#f5f5f7] text-[#1d1d1f] transition-colors"
+    >
       <Container>
         <SectionHeader
           index="07"
+          theme="light"
           eyebrow="Initiate Conversation"
           title="Let's Build Something Exceptional"
           description="Whether discussing enterprise .NET architecture, API development, or full-stack software initiatives, reach out directly."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Direct Channels */}
+        <div ref={formCardRef} className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Direct Channels (Apple Utility Card) */}
           <div className="lg:col-span-5 space-y-6">
-            <Card variant="glass" className="p-8">
-              <h3 className="text-xl font-bold text-white mb-6">Direct Channels</h3>
+            <div className="bg-white rounded-[18px] p-8 border border-[#e0e0e0]">
+              <h3 className="text-xl font-semibold text-[#1d1d1f] tracking-tight mb-6">Direct Channels</h3>
 
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Email card */}
-                <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                <div className="p-4 rounded-[14px] bg-[#fafafc] border border-[#e0e0e0] flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg bg-sky-950 text-sky-400 border border-sky-800">
-                      <Mail className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-full bg-white text-[#0066cc] border border-[#e0e0e0] flex items-center justify-center">
+                      <Mail className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[11px] font-mono text-slate-500 uppercase block">Email Address</span>
+                      <span className="text-[10px] font-mono text-[#7a7a7a] uppercase block">Email Address</span>
                       <a
                         href={`mailto:${profileInfo.email}`}
-                        className="text-sm font-semibold text-white hover:text-sky-400 transition-colors"
+                        className="text-sm font-semibold text-[#1d1d1f] hover:text-[#0066cc] transition-colors"
                       >
                         {profileInfo.email}
                       </a>
@@ -127,10 +152,10 @@ export function ContactSection() {
                   </div>
                   <button
                     onClick={handleCopyEmail}
-                    className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    className="p-2 rounded-full bg-white text-[#7a7a7a] border border-[#e0e0e0] hover:text-[#1d1d1f] transition-colors cursor-pointer"
                     title="Copy email address"
                   >
-                    {copiedEmail ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    {copiedEmail ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
 
@@ -139,16 +164,15 @@ export function ContactSection() {
                   href={profileInfo.linkedin}
                   target="_blank"
                   rel="noreferrer"
-                  data-cursor="external"
-                  className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between hover:border-slate-700 transition-colors group"
+                  className="p-4 rounded-[14px] bg-[#fafafc] border border-[#e0e0e0] flex items-center justify-between hover:border-[#0066cc]/40 transition-colors group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg bg-blue-950 text-blue-400 border border-blue-800">
-                      <LinkedinIcon className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-full bg-white text-[#0066cc] border border-[#e0e0e0] flex items-center justify-center">
+                      <LinkedinIcon className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[11px] font-mono text-slate-500 uppercase block">Professional Network</span>
-                      <span className="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">
+                      <span className="text-[10px] font-mono text-[#7a7a7a] uppercase block">Professional Network</span>
+                      <span className="text-sm font-semibold text-[#1d1d1f] group-hover:text-[#0066cc] transition-colors">
                         LinkedIn Profile
                       </span>
                     </div>
@@ -160,16 +184,15 @@ export function ContactSection() {
                   href={profileInfo.github}
                   target="_blank"
                   rel="noreferrer"
-                  data-cursor="external"
-                  className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between hover:border-slate-700 transition-colors group"
+                  className="p-4 rounded-[14px] bg-[#fafafc] border border-[#e0e0e0] flex items-center justify-between hover:border-[#0066cc]/40 transition-colors group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700">
-                      <GithubIcon className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-full bg-white text-[#1d1d1f] border border-[#e0e0e0] flex items-center justify-center">
+                      <GithubIcon className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[11px] font-mono text-slate-500 uppercase block">Code Repositories</span>
-                      <span className="text-sm font-semibold text-white group-hover:text-sky-400 transition-colors">
+                      <span className="text-[10px] font-mono text-[#7a7a7a] uppercase block">Code Repositories</span>
+                      <span className="text-sm font-semibold text-[#1d1d1f] group-hover:text-[#0066cc] transition-colors">
                         github.com/Shuaib-sh
                       </span>
                     </div>
@@ -178,33 +201,32 @@ export function ContactSection() {
               </div>
 
               {/* Resume download prompt */}
-              <div className="mt-8 pt-6 border-t border-slate-800">
-                <Button
-                  variant="outline"
-                  size="md"
+              <div className="mt-8 pt-6 border-t border-[#f0f0f0]">
+                <a
                   href={profileInfo.resumePath}
-                  isExternal
-                  icon={<FileDown className="w-4 h-4" />}
-                  className="w-full justify-center"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 px-[22px] py-[11px] rounded-full text-[15px] font-normal border border-[#0066cc] text-[#0066cc] hover:bg-[#0066cc]/5 active:scale-[0.95] transition-all"
                 >
-                  Download Complete Resume (PDF)
-                </Button>
+                  <FileDown className="w-4 h-4" />
+                  <span>Download Complete Resume (PDF)</span>
+                </a>
               </div>
-            </Card>
+            </div>
           </div>
 
-          {/* Interactive Contact Form */}
+          {/* Interactive Contact Form (Apple Store Card) */}
           <div className="lg:col-span-7">
-            <Card variant="glass" className="p-8">
-              <h3 className="text-xl font-bold text-white mb-2">Send a Direct Message</h3>
-              <p className="text-xs text-slate-400 mb-6 font-normal">
+            <div className="bg-white rounded-[18px] p-8 border border-[#e0e0e0]">
+              <h3 className="text-xl font-semibold text-[#1d1d1f] tracking-tight mb-2">Send a Direct Message</h3>
+              <p className="text-[14px] text-[#7a7a7a] mb-6 font-normal">
                 Fill in your details below to dispatch an inquiry directly.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5 uppercase">
+                    <label className="block text-xs font-mono text-[#7a7a7a] mb-1.5 uppercase">
                       Your Name *
                     </label>
                     <input
@@ -213,12 +235,12 @@ export function ContactSection() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Jane Doe"
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#141722] border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-colors"
+                      className="w-full px-4 py-2.5 rounded-[12px] bg-[#fafafc] border border-[#e0e0e0] text-[#1d1d1f] text-sm focus:outline-none focus:border-[#0066cc] focus:ring-2 focus:ring-[#0071e3]/30 transition-all placeholder:text-[#a0a0a5]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono text-slate-400 mb-1.5 uppercase">
+                    <label className="block text-xs font-mono text-[#7a7a7a] mb-1.5 uppercase">
                       Email Address *
                     </label>
                     <input
@@ -227,13 +249,13 @@ export function ContactSection() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="jane@example.com"
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#141722] border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-colors"
+                      className="w-full px-4 py-2.5 rounded-[12px] bg-[#fafafc] border border-[#e0e0e0] text-[#1d1d1f] text-sm focus:outline-none focus:border-[#0066cc] focus:ring-2 focus:ring-[#0071e3]/30 transition-all placeholder:text-[#a0a0a5]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-slate-400 mb-1.5 uppercase">
+                  <label className="block text-xs font-mono text-[#7a7a7a] mb-1.5 uppercase">
                     Subject / Discussion Topic
                   </label>
                   <input
@@ -241,12 +263,12 @@ export function ContactSection() {
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     placeholder="Backend Architecture / Project Inquiry"
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#141722] border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-colors"
+                    className="w-full px-4 py-2.5 rounded-[12px] bg-[#fafafc] border border-[#e0e0e0] text-[#1d1d1f] text-sm focus:outline-none focus:border-[#0066cc] focus:ring-2 focus:ring-[#0071e3]/30 transition-all placeholder:text-[#a0a0a5]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono text-slate-400 mb-1.5 uppercase">
+                  <label className="block text-xs font-mono text-[#7a7a7a] mb-1.5 uppercase">
                     Message *
                   </label>
                   <textarea
@@ -255,20 +277,20 @@ export function ContactSection() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder="Describe your inquiry or engineering project..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#141722] border border-slate-800 text-white text-sm focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-colors resize-none"
+                    className="w-full px-4 py-2.5 rounded-[12px] bg-[#fafafc] border border-[#e0e0e0] text-[#1d1d1f] text-sm focus:outline-none focus:border-[#0066cc] focus:ring-2 focus:ring-[#0071e3]/30 transition-all resize-none placeholder:text-[#a0a0a5]"
                   />
                 </div>
 
                 {status === "error" && (
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-rose-950/50 border border-rose-800 text-xs text-rose-300">
+                  <div className="flex items-center gap-2 p-3 rounded-[12px] bg-rose-50 border border-rose-200 text-xs text-rose-700">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>Please ensure all required fields are filled out properly.</span>
                   </div>
                 )}
 
                 {status === "success" && (
-                  <div className="flex items-center gap-2 p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-800 text-xs text-emerald-300">
-                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+                  <div className="flex items-center gap-2 p-3.5 rounded-[12px] bg-emerald-50 border border-emerald-200 text-xs text-emerald-800">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
                     <span>Message transmitted successfully! Shuaib will respond to your email shortly.</span>
                   </div>
                 )}
@@ -280,13 +302,13 @@ export function ContactSection() {
                   className="w-full justify-center"
                   disabled={status === "submitting"}
                 >
-                  {status === "submitting" ? "Preparing Email..." : "Transmit Message"}
+                  {status === "submitting" ? "Transmitting..." : "Transmit Message"}
                 </Button>
               </form>
-            </Card>
+            </div>
           </div>
         </div>
       </Container>
-    </Section>
+    </section>
   );
 }

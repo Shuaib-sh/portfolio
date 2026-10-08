@@ -3,36 +3,39 @@ import { cn } from "@/lib/utils";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
-  variant?: "default" | "glass" | "glow" | "subtle";
+  variant?: "default" | "darkTile" | "lightTile" | "pearl" | "subtle";
   hoverEffect?: boolean;
 }
 
 export function Card({
   children,
   className,
-  variant = "glass",
+  variant = "darkTile",
   hoverEffect = true,
   ...props
 }: CardProps) {
   const variantClasses = {
-    glass: "bg-[#11131a]/80 backdrop-blur-md border border-slate-800/80 shadow-xl shadow-black/40",
-    glow: "bg-[#11131a]/90 backdrop-blur-md border border-sky-500/25 shadow-lg shadow-sky-500/5",
-    default: "bg-[#141720] border border-slate-800",
-    subtle: "bg-slate-900/40 border border-slate-800/50",
+    // Apple Dark Surface Tile
+    darkTile: "bg-[#272729] text-white border border-white/10",
+    // Apple Light Store Utility Card
+    lightTile: "bg-[#ffffff] text-[#1d1d1f] border border-[#e0e0e0]",
+    // Apple Parchment Card
+    pearl: "bg-[#fafafc] text-[#1d1d1f] border border-[#e0e0e0]",
+    // Apple Subtle Dark Card
+    default: "bg-[#1d1d1f] text-white border border-white/10",
+    subtle: "bg-white/5 text-white border border-white/10",
   };
 
   return (
     <div
       className={cn(
-        "rounded-2xl p-6 sm:p-8 transition-all duration-300 relative overflow-hidden group",
+        "rounded-[18px] p-6 sm:p-8 transition-all duration-200 relative overflow-hidden group",
         variantClasses[variant],
-        hoverEffect && "hover:border-slate-700 hover:-translate-y-1 hover:shadow-2xl hover:shadow-sky-500/5",
+        hoverEffect && "hover:border-white/20 transition-colors",
         className
       )}
       {...props}
     >
-      {/* Subtle top border highlight shine */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-slate-600/30 to-transparent group-hover:via-sky-400/40 transition-colors pointer-events-none" />
       {children}
     </div>
   );

@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
+  { label: "Overview", href: "#hero" },
   { label: "About", href: "#about" },
-  { label: "Career", href: "#career" },
-  { label: "Engineering", href: "#engineering" },
+  { label: "Production", href: "#career" },
   { label: "FormatX", href: "#formatx" },
-  { label: "Lab", href: "#lab" },
-  { label: "Skills", href: "#skills" },
+  { label: "Engineering Lab", href: "#lab" },
+  { label: "Stack", href: "#skills" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -31,116 +31,116 @@ export function Navbar() {
   }, []);
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-40 transition-all duration-300",
-        isScrolled
-          ? "bg-[#090a0d]/85 backdrop-blur-md border-b border-slate-800/80 py-3.5 shadow-lg shadow-black/30"
-          : "bg-transparent py-5"
-      )}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Brand Logo / Identity */}
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 group focus:outline-none"
-        >
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/80 flex items-center justify-center font-mono font-bold text-sky-400 group-hover:border-sky-500/50 group-hover:shadow-[0_0_12px_rgba(56,189,248,0.25)] transition-all">
-            SB
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-white tracking-tight group-hover:text-sky-300 transition-colors">
-              {profileInfo.name}
-            </span>
-            <span className="text-[10px] font-mono text-slate-400 tracking-wider">
-              .NET Developer
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1 bg-[#12151e]/60 border border-slate-800/60 rounded-full px-4 py-1.5 backdrop-blur-sm">
-          {NAV_LINKS.map((link, idx) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-xs font-medium text-slate-400 hover:text-white px-3 py-1.5 rounded-full hover:bg-slate-800/60 transition-colors"
-            >
-              <span className="text-sky-400/80 font-mono text-[10px] mr-1">0{idx + 1}.</span>
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* Desktop Action Buttons */}
-        <div className="hidden sm:flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            href={profileInfo.resumePath}
-            isExternal
-            icon={<FileDown className="w-3.5 h-3.5" />}
+    <header className="fixed top-0 left-0 right-0 z-50 flex flex-col">
+      {/* 1. Apple Global Nav (44px, Pure Black #000000) */}
+      <div className="w-full bg-[#000000] h-[44px] border-b border-white/10 flex items-center">
+        <div className="max-w-[1024px] w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
+          {/* Minimalist Monogram / Logo */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 group text-white opacity-85 hover:opacity-100 transition-opacity"
+            aria-label="Home"
           >
-            Resume
-          </Button>
+            <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-black" />
+            </div>
+            <span className="text-[12px] font-normal tracking-[-0.01em] text-white">
+              Shuaib B
+            </span>
+          </Link>
 
-          <Button
-            variant="primary"
-            size="sm"
-            href="#contact"
-          >
-            Get In Touch
-          </Button>
-        </div>
-
-        {/* Mobile Menu Toggle Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 focus:outline-none"
-          aria-label="Toggle navigation menu"
-        >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-      </div>
-
-      {/* Mobile Drawer Overlay */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-[65px] bg-[#090a0d]/95 backdrop-blur-xl border-b border-slate-800 p-6 shadow-2xl transition-all">
-          <nav className="flex flex-col gap-3">
-            {NAV_LINKS.map((link, idx) => (
+          {/* Quiet Center Links (Apple style 12px) */}
+          <nav className="hidden md:flex items-center gap-7">
+            {NAV_LINKS.slice(1).map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-between text-base font-medium text-slate-200 hover:text-sky-400 py-2 border-b border-slate-900"
+                className="text-[12px] font-normal text-[#cccccc] hover:text-white transition-colors"
               >
-                <span>{link.label}</span>
-                <span className="font-mono text-xs text-sky-400">0{idx + 1}</span>
+                {link.label}
               </a>
             ))}
-
-            <div className="pt-4 flex flex-col gap-3">
-              <Button
-                variant="outline"
-                size="md"
-                href={profileInfo.resumePath}
-                isExternal
-                icon={<FileDown className="w-4 h-4" />}
-                className="w-full justify-center"
-              >
-                Download Resume
-              </Button>
-              <Button
-                variant="primary"
-                size="md"
-                href="#contact"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full justify-center"
-              >
-                Get In Touch
-              </Button>
-            </div>
           </nav>
+
+          {/* Right Action */}
+          <div className="flex items-center gap-4">
+            <a
+              href={profileInfo.resumePath}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[12px] text-[#2997ff] hover:text-[#0071e3] transition-colors hidden sm:inline-block"
+            >
+              Resume
+            </a>
+
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden text-white/80 hover:text-white p-1"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Apple Sub-Nav Frosted Glass Strip (52px) */}
+      <div className="w-full sub-nav-frosted-dark flex items-center">
+        <div className="max-w-[1024px] w-full mx-auto px-4 sm:px-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-[19px] sm:text-[21px] font-semibold text-white tracking-[-0.02em]">
+              .NET Software Engineer
+            </span>
+            <span className="text-white/40 text-xs hidden sm:inline">•</span>
+            <span className="text-xs text-[#cccccc] hidden sm:inline">Enterprise Architecture</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button
+              variant="primary"
+              size="sm"
+              href="#contact"
+              className="text-[12px] px-4 py-1.5"
+            >
+              Get in Touch
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-[#000000]/98 backdrop-blur-2xl border-b border-white/10 p-6 flex flex-col gap-4 text-white">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-base text-white/90 hover:text-[#2997ff] py-2 border-b border-white/10"
+            >
+              {link.label}
+            </a>
+          ))}
+          <div className="pt-2 flex flex-col gap-2">
+            <Button
+              variant="primary"
+              size="md"
+              href="#contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full"
+            >
+              Get in Touch
+            </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              href={profileInfo.resumePath}
+              isExternal
+              className="w-full"
+            >
+              Download Resume
+            </Button>
+          </div>
         </div>
       )}
     </header>

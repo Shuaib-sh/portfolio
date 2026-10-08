@@ -1,49 +1,62 @@
 @import "tailwindcss";
 
 :root {
-  --background: #090a0d;
-  --background-secondary: #0f1117;
-  --surface: #141720;
-  --surface-hover: #1b202c;
-  --surface-active: #222837;
-  --border: #212634;
-  --border-light: #2d3447;
-  --border-accent: rgba(56, 189, 248, 0.3);
+  /* Apple Design System Color Tokens */
+  --primary: #0066cc;
+  --primary-focus: #0071e3;
+  --primary-on-dark: #2997ff;
 
-  --foreground: #f1f5f9;
-  --foreground-muted: #94a3b8;
-  --foreground-subtle: #64748b;
+  --ink: #1d1d1f;
+  --body: #1d1d1f;
+  --body-on-dark: #ffffff;
+  --body-muted: #cccccc;
+  --ink-muted-80: #333333;
+  --ink-muted-48: #7a7a7a;
 
-  --accent: #38bdf8;
-  --accent-glow: rgba(56, 189, 248, 0.15);
-  --accent-secondary: #818cf8;
-  --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  --divider-soft: #f0f0f0;
+  --hairline: #e0e0e0;
+  --hairline-dark: rgba(255, 255, 255, 0.12);
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --canvas: #ffffff;
+  --canvas-parchment: #f5f5f7;
+  --surface-pearl: #fafafc;
+
+  --surface-tile-1: #272729;
+  --surface-tile-2: #2a2a2c;
+  --surface-tile-3: #252527;
+  --surface-black: #000000;
+  --surface-chip-translucent: rgba(210, 210, 215, 0.64);
+
+  /* Default theme aliases */
+  --background: #000000;
+  --foreground: #ffffff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-background-secondary: var(--background-secondary);
-  --color-surface: var(--surface);
-  --color-surface-hover: var(--surface-hover);
-  --color-surface-active: var(--surface-active);
-  --color-border: var(--border);
-  --color-border-light: var(--border-light);
-  --color-border-accent: var(--border-accent);
+  --color-primary: #0066cc;
+  --color-primary-focus: #0071e3;
+  --color-primary-on-dark: #2997ff;
 
-  --color-foreground: var(--foreground);
-  --color-foreground-muted: var(--foreground-muted);
-  --color-foreground-subtle: var(--foreground-subtle);
+  --color-ink: #1d1d1f;
+  --color-ink-muted-80: #333333;
+  --color-ink-muted-48: #7a7a7a;
+  --color-body-muted: #cccccc;
 
-  --color-accent: var(--accent);
-  --color-accent-secondary: var(--accent-secondary);
+  --color-divider-soft: #f0f0f0;
+  --color-hairline: #e0e0e0;
+  --color-hairline-dark: rgba(255, 255, 255, 0.12);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: #ffffff;
+  --color-canvas-parchment: #f5f5f7;
+  --color-surface-pearl: #fafafc;
+
+  --color-surface-tile-1: #272729;
+  --color-surface-tile-2: #2a2a2c;
+  --color-surface-tile-3: #252527;
+  --color-surface-black: #000000;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", var(--font-geist-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", var(--font-geist-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -51,66 +64,101 @@
 }
 
 html {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: #000000;
+  color: #1d1d1f;
   scroll-behavior: smooth;
-  color-scheme: dark;
+  color-scheme: dark light;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), "Helvetica Neue", Helvetica, Arial, sans-serif;
   overflow-x: hidden;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar for dark aesthetic */
+/* Apple typography helpers */
+.apple-headline {
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  line-height: 1.07;
+}
+
+.apple-body {
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.374px;
+}
+
+.apple-dense-link {
+  font-size: 17px;
+  line-height: 2.41;
+  letter-spacing: 0;
+}
+
+/* Signature Apple Single Product Drop-Shadow */
+.product-shadow {
+  box-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+}
+
+.product-shadow-lg {
+  box-shadow: rgba(0, 0, 0, 0.32) 0px 20px 45px -10px, rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+}
+
+/* Global Nav & Frosted Sub-Nav */
+.global-nav {
+  height: 44px;
+  background-color: #000000;
+}
+
+.sub-nav-frosted-dark {
+  height: 52px;
+  background-color: rgba(29, 29, 31, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sub-nav-frosted-light {
+  height: 52px;
+  background-color: rgba(245, 245, 247, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Button active micro-interaction */
+.apple-press:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease-out;
+}
+
+/* Custom discreet scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090a0d;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #212634;
-  border-radius: 4px;
+  background: rgba(120, 120, 128, 0.4);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #38bdf8;
+  background: rgba(120, 120, 128, 0.7);
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(56, 189, 248, 0.25);
-  color: #ffffff;
-}
-
-/* Glassmorphism primitives */
-.glass-panel {
-  background: rgba(20, 23, 32, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
-}
-
-.glass-panel-glow {
-  background: rgba(20, 23, 32, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(56, 189, 248, 0.2);
-  box-shadow: 0 0 30px rgba(56, 189, 248, 0.05);
-}
-
-/* Subtle dot grid backdrop */
-.grid-pattern {
-  background-size: 32px 32px;
-  background-image: 
-    radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-color: rgba(0, 102, 204, 0.35);
+  color: inherit;
 }
 
 /* Reduced motion guards */

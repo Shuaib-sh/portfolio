@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "outline" | "ghost";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "pearl" | "darkUtility";
   size?: "sm" | "md" | "lg";
   href?: string;
   isExternal?: boolean;
@@ -31,7 +31,6 @@ export function Button({
 }: ButtonProps) {
   const shouldReduceMotion = useReducedMotion();
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const buttonRef = useRef<HTMLElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!magnetic || shouldReduceMotion) return;
@@ -39,7 +38,7 @@ export function Button({
     const { top, left, width, height } = e.currentTarget.getBoundingClientRect();
     const middleX = clientX - (left + width / 2);
     const middleY = clientY - (top + height / 2);
-    setPosition({ x: middleX * 0.15, y: middleY * 0.15 });
+    setPosition({ x: middleX * 0.12, y: middleY * 0.12 });
   };
 
   const handleMouseLeave = () => {
@@ -47,23 +46,29 @@ export function Button({
   };
 
   const baseClasses =
-    "inline-flex items-center justify-center font-medium transition-all duration-200 select-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#090a0d]";
+    "inline-flex items-center justify-center font-normal transition-all duration-150 select-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3] active:scale-[0.95] apple-press";
 
   const variantClasses = {
+    // Apple Action Blue Primary Pill
     primary:
-      "bg-gradient-to-r from-sky-500 to-sky-400 text-slate-950 font-semibold shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30 hover:brightness-110 active:scale-[0.98]",
+      "bg-[#0066cc] text-white hover:bg-[#0071e3] rounded-full",
+    // Apple Secondary Ghost Pill (on dark tiles uses #2997ff)
     secondary:
-      "bg-slate-900/90 text-white border border-slate-700/80 hover:bg-slate-800 hover:border-slate-600 active:scale-[0.98]",
+      "bg-transparent text-[#2997ff] border border-[#2997ff] hover:bg-[#2997ff]/10 rounded-full",
     outline:
-      "bg-transparent text-slate-300 border border-slate-700 hover:text-white hover:border-sky-400/60 hover:bg-sky-500/5 active:scale-[0.98]",
+      "bg-transparent text-white border border-white/25 hover:border-white/50 hover:bg-white/5 rounded-full",
+    pearl:
+      "bg-[#fafafc] text-[#333333] border border-[#e0e0e0] hover:bg-[#ffffff] rounded-[11px]",
+    darkUtility:
+      "bg-[#1d1d1f] text-white hover:bg-[#2d2d30] rounded-[8px]",
     ghost:
-      "bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/60 active:scale-[0.98]",
+      "bg-transparent text-[#2997ff] hover:text-[#0071e3] rounded-full",
   };
 
   const sizeClasses = {
-    sm: "text-xs px-3 py-1.5 rounded-lg gap-1.5",
-    md: "text-sm px-4 py-2.5 rounded-xl gap-2",
-    lg: "text-base px-6 py-3.5 rounded-xl gap-2.5",
+    sm: "text-xs px-3.5 py-1.5 gap-1.5",
+    md: "text-[15px] sm:text-[17px] px-[22px] py-[11px] gap-2",
+    lg: "text-[17px] px-7 py-3 gap-2.5",
   };
 
   const content = (
