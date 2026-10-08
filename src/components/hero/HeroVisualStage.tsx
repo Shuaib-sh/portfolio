@@ -4,11 +4,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from "framer-motion";
 import { useGsapContext, gsap, ScrollTrigger } from "@/lib/gsap";
-import {
-  Rotate3d,
-  RotateCcw,
-  CheckCircle2,
-} from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 interface HeroVisualStageProps {
   onReady?: () => void;
@@ -30,23 +26,13 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
 
   // Motion values for full 3D rotation
   const rotXVal = useMotionValue(0);
+  const rotXValRaw = useRef(0);
   const rotYVal = useMotionValue(0);
 
-  // Smooth springs for realistic momentum and fluid inertia
-  const springConfig = { stiffness: 140, damping: 20, mass: 0.8 };
+  // Smooth springs with organic momentum — gracefully glides back to 0 on release
+  const springConfig = { stiffness: 85, damping: 18, mass: 0.95 };
   const smoothRotX = useSpring(rotXVal, springConfig);
   const smoothRotY = useSpring(rotYVal, springConfig);
-
-  // Display angle for HUD
-  const [displayAngle, setDisplayAngle] = useState(0);
-
-  useEffect(() => {
-    const unsubscribe = smoothRotY.on("change", (latest) => {
-      const normalized = Math.round(((latest % 360) + 360) % 360);
-      setDisplayAngle(normalized);
-    });
-    return () => unsubscribe();
-  }, [smoothRotY]);
 
   // Asset readiness signaling
   const handleImageReady = () => {
@@ -59,7 +45,6 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
     if (imageRef.current?.complete) {
       handleImageReady();
     }
-    // Safety fallback so entrance sequence begins promptly even if cached
     const timer = setTimeout(() => {
       handleImageReady();
     }, 200);
@@ -82,7 +67,7 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
     });
   }, [shouldReduceMotion]);
 
-  // Deep Parallax for Floating Telemetry Chips
+  // Parallax for Floating Telemetry Chips
   const chip1X = useTransform(smoothRotY, (y) => Math.sin((y * Math.PI) / 180) * -35);
   const chip1Z = useTransform(smoothRotY, (y) => Math.cos((y * Math.PI) / 180) * 80);
 
@@ -109,6 +94,7 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
     const deltaX = e.clientX - startX.current;
     const deltaY = e.clientY - startY.current;
 
+    // Direct manual 3D rotation while dragged
     const newY = currentRotY.current + deltaX * 0.7;
     rotYVal.set(newY);
 
@@ -116,18 +102,15 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
     rotXVal.set(newX);
   };
 
+  // On release: automatically and smoothly springs back to straight position (0, 0)
   const handlePointerUp = (e: React.PointerEvent) => {
     if (!isDragging) return;
     setIsDragging(false);
     (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
-  };
 
-  const handleReset = (e: React.MouseEvent) => {
-    e.stopPropagation();
+    // Auto return to straight front position
+    rotYVal.set(0);
     rotXVal.set(0);
-    const current = rotYVal.get();
-    const nearestFull = Math.round(current / 360) * 360;
-    rotYVal.set(nearestFull);
   };
 
   return (
@@ -142,11 +125,12 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onPointerLeave={handlePointerUp}
         className={`relative w-full h-full flex items-center justify-center [perspective:1400px] touch-none ${
           isDragging ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
-        {/* Apple Pedestal Base (Subtle Radial Surface) with .hero-pedestal hook */}
+        {/* Apple Pedestal Base (Subtle Radial Surface) */}
         <div className="hero-pedestal absolute bottom-6 w-72 h-12 pointer-events-none -z-10 flex items-center justify-center">
           <div className="w-64 h-8 rounded-[100%] bg-black/80 blur-md" />
           <div className="absolute w-56 h-6 rounded-[100%] border border-white/10" />
@@ -154,22 +138,36 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
 
         {/* Cinematic Avatar Arrival Wrapper (.hero-avatar-entrance) */}
         <div className="hero-avatar-entrance relative z-10 w-full h-full flex items-center justify-center pointer-events-none">
-          {/* Central 3D Rotatable Avatar Rig */}
+          {/* Central 3D Rotatable Avatar Rig with Living Standing Idle Dynamic */}
           <motion.div
             style={{
               rotateX: shouldReduceMotion ? 0 : smoothRotX,
               rotateY: shouldReduceMotion ? 0 : smoothRotY,
               transformStyle: "preserve-3d",
             }}
-            className="relative z-10 w-full h-full flex items-center justify-center pointer-events-auto"
+            animate={
+              shouldReduceMotion || isDragging
+                ? { y: 0, rotateZ: 0 }
+                : {
+                    y: [0, -7, 0],
+                    rotateZ: [-0.6, 0.6, -0.6],
+                  }
+            }
+            transition={{
+              duration: 4.8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="relative z-10 w-full h-full flex items-center justify-center pointer-events-auto [transform:translateZ(0)]"
           >
-            {/* FRONT FACE: High-Resolution Transparent 3D Avatar with Apple signature product shadow */}
+            {/* FRONT FACE: High-Resolution Transparent 3D Avatar (Razor-Sharp Pixel Rendering) */}
             <div
               style={{
                 backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
                 transformStyle: "preserve-3d",
               }}
-              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              className="absolute inset-0 flex items-center justify-center pointer-events-none [transform:translateZ(0)]"
             >
               <div className="relative w-full h-full max-h-[600px]">
                 <Image
@@ -177,8 +175,14 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
                   src="/avatar/shuaib-fullbody-transparent.png"
                   alt="Shuaib B — Full Body 3D Software Engineer Avatar"
                   fill
-                  sizes="(max-width: 768px) 380px, 480px"
-                  className="object-contain object-bottom filter contrast-[1.04] brightness-[1.03] product-shadow"
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 896px"
+                  className="object-contain object-bottom filter contrast-[1.03] brightness-[1.02] product-shadow [transform:translateZ(0)]"
+                  style={{
+                    imageRendering: "auto",
+                    WebkitBackfaceVisibility: "hidden",
+                    backfaceVisibility: "hidden",
+                  }}
                   priority
                   onLoad={handleImageReady}
                 />
@@ -189,6 +193,7 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
             <div
               style={{
                 backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
                 transform: "rotateY(180deg) translateZ(10px)",
                 transformStyle: "preserve-3d",
               }}
@@ -287,30 +292,6 @@ export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
             </div>
           </div>
         </motion.div>
-      </div>
-
-      {/* 3D Interaction Control HUD Pill (Apple Minimalist Pill) with .hero-hud-pill hook */}
-      <div className="hero-hud-pill mt-2 flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md text-xs text-white/80 z-30">
-        <div className="flex items-center gap-2">
-          <Rotate3d className="w-3.5 h-3.5 text-[#2997ff] animate-spin [animation-duration:9s]" />
-          <span className="text-white/90 text-[12px]">
-            {isDragging ? "Rotating 3D" : "Drag to rotate"}
-          </span>
-          <span className="px-1.5 py-0.5 rounded bg-black/40 border border-white/10 text-[10px] text-[#2997ff] font-mono">
-            {displayAngle}°
-          </span>
-        </div>
-
-        {displayAngle !== 0 && (
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-1 text-[11px] text-[#2997ff] hover:text-white transition-colors cursor-pointer ml-1"
-            title="Reset to front angle"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span>Reset</span>
-          </button>
-        )}
       </div>
     </div>
   );

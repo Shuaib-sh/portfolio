@@ -42,7 +42,6 @@ export function HeroSection() {
         ".hero-chip-1",
         ".hero-chip-2",
         ".hero-chip-3",
-        ".hero-hud-pill",
         statusChipRef.current,
         titleRef.current,
         subtitleRef.current,
@@ -68,7 +67,6 @@ export function HeroSection() {
       ".hero-chip-1",
       ".hero-chip-2",
       ".hero-chip-3",
-      ".hero-hud-pill",
     ], { opacity: 0 });
 
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -97,6 +95,7 @@ export function HeroSection() {
         filter: "blur(0px)",
         duration: 1.25,
         ease: "power3.out",
+        clearProps: "filter",
       }
     );
 
@@ -123,14 +122,6 @@ export function HeroSection() {
         ease: "power2.out",
       },
       "-=0.25"
-    );
-
-    // HUD rotation hint pill soft reveal
-    tl.fromTo(
-      ".hero-hud-pill",
-      { opacity: 0, y: 8 },
-      { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
-      "-=0.3"
     );
 
     // ==========================================
