@@ -5,20 +5,21 @@ import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from "framer-motion";
 import { useGsapContext, gsap, ScrollTrigger } from "@/lib/gsap";
 import {
-  Cpu,
-  Database,
   Rotate3d,
   RotateCcw,
-  Layers,
-  Server,
-  Workflow,
   CheckCircle2,
 } from "lucide-react";
 
-export function HeroVisualStage() {
+interface HeroVisualStageProps {
+  onReady?: () => void;
+}
+
+export function HeroVisualStage({ onReady }: HeroVisualStageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const shouldReduceMotion = useReducedMotion();
+  const hasTriggeredReady = useRef(false);
 
   // Drag interaction states
   const [isDragging, setIsDragging] = useState(false);
@@ -46,6 +47,24 @@ export function HeroVisualStage() {
     });
     return () => unsubscribe();
   }, [smoothRotY]);
+
+  // Asset readiness signaling
+  const handleImageReady = () => {
+    if (hasTriggeredReady.current) return;
+    hasTriggeredReady.current = true;
+    onReady?.();
+  };
+
+  useEffect(() => {
+    if (imageRef.current?.complete) {
+      handleImageReady();
+    }
+    // Safety fallback so entrance sequence begins promptly even if cached
+    const timer = setTimeout(() => {
+      handleImageReady();
+    }, 200);
+    return () => clearTimeout(timer);
+  }, []);
 
   // GSAP ScrollTrigger for subtle spatial floating effect on scroll
   useGsapContext(stageRef, () => {
@@ -127,140 +146,151 @@ export function HeroVisualStage() {
           isDragging ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
-        {/* Apple Pedestal Base (Subtle Radial Surface) */}
-        <div className="absolute bottom-6 w-72 h-12 pointer-events-none -z-10 flex items-center justify-center">
+        {/* Apple Pedestal Base (Subtle Radial Surface) with .hero-pedestal hook */}
+        <div className="hero-pedestal absolute bottom-6 w-72 h-12 pointer-events-none -z-10 flex items-center justify-center">
           <div className="w-64 h-8 rounded-[100%] bg-black/80 blur-md" />
           <div className="absolute w-56 h-6 rounded-[100%] border border-white/10" />
         </div>
 
-        {/* Central 3D Rotatable Avatar Rig */}
-        <motion.div
-          style={{
-            rotateX: shouldReduceMotion ? 0 : smoothRotX,
-            rotateY: shouldReduceMotion ? 0 : smoothRotY,
-            transformStyle: "preserve-3d",
-          }}
-          className="relative z-10 w-full h-full flex items-center justify-center"
-        >
-          {/* FRONT FACE: High-Resolution Transparent 3D Avatar with Apple signature product shadow */}
-          <div
+        {/* Cinematic Avatar Arrival Wrapper (.hero-avatar-entrance) */}
+        <div className="hero-avatar-entrance relative z-10 w-full h-full flex items-center justify-center pointer-events-none">
+          {/* Central 3D Rotatable Avatar Rig */}
+          <motion.div
             style={{
-              backfaceVisibility: "hidden",
+              rotateX: shouldReduceMotion ? 0 : smoothRotX,
+              rotateY: shouldReduceMotion ? 0 : smoothRotY,
               transformStyle: "preserve-3d",
             }}
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            className="relative z-10 w-full h-full flex items-center justify-center pointer-events-auto"
           >
-            <div className="relative w-full h-full max-h-[600px]">
-              <Image
-                src="/avatar/shuaib-fullbody-transparent.png"
-                alt="Shuaib B — Full Body 3D Software Engineer Avatar"
-                fill
-                sizes="(max-width: 768px) 380px, 480px"
-                className="object-contain object-bottom filter contrast-[1.04] brightness-[1.03] product-shadow"
-                priority
-              />
-            </div>
-          </div>
-
-          {/* BACK FACE (180 deg): Apple Pro Technical Spec Sheet */}
-          <div
-            style={{
-              backfaceVisibility: "hidden",
-              transform: "rotateY(180deg) translateZ(10px)",
-              transformStyle: "preserve-3d",
-            }}
-            className="absolute w-[320px] sm:w-[350px] h-[480px] rounded-[18px] p-6 bg-[#1d1d1f] border border-white/15 backdrop-blur-xl shadow-2xl flex flex-col justify-between overflow-hidden text-left"
-          >
-            {/* Top Spec Header */}
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#2997ff]" />
-                  <span className="text-[12px] font-semibold text-white tracking-tight">
-                    ENGINEERING SPEC
-                  </span>
-                </div>
-                <span className="text-[11px] font-mono text-[#7a7a7a]">REV 2026.1</span>
-              </div>
-
-              <div className="mt-4">
-                <h4 className="text-xl font-semibold text-white tracking-[-0.02em]">Shuaib B</h4>
-                <p className="text-xs text-[#2997ff]">Software Engineer • .NET Core</p>
-                <p className="text-[11px] text-[#cccccc] mt-1">1.7+ Yrs Enterprise Production</p>
-              </div>
-
-              {/* Architecture Matrix */}
-              <div className="mt-5 space-y-2.5 text-xs">
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] text-[#7a7a7a] uppercase tracking-wider block">Core Backend</span>
-                  <p className="text-white font-medium">ASP.NET Core Web API • C#</p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] text-[#7a7a7a] uppercase tracking-wider block">Async Pipelines</span>
-                  <p className="text-white font-medium">Hangfire Background Processing</p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] text-[#7a7a7a] uppercase tracking-wider block">Persistence & ORM</span>
-                  <p className="text-white font-medium">Dapper • PostgreSQL • MySQL</p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-[10px] text-[#7a7a7a] uppercase tracking-wider block">Featured Product</span>
-                  <p className="text-[#2997ff] font-medium">FormatX SaaS (Angular 16)</p>
-                </div>
+            {/* FRONT FACE: High-Resolution Transparent 3D Avatar with Apple signature product shadow */}
+            <div
+              style={{
+                backfaceVisibility: "hidden",
+                transformStyle: "preserve-3d",
+              }}
+              className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            >
+              <div className="relative w-full h-full max-h-[600px]">
+                <Image
+                  ref={imageRef}
+                  src="/avatar/shuaib-fullbody-transparent.png"
+                  alt="Shuaib B — Full Body 3D Software Engineer Avatar"
+                  fill
+                  sizes="(max-width: 768px) 380px, 480px"
+                  className="object-contain object-bottom filter contrast-[1.04] brightness-[1.03] product-shadow"
+                  priority
+                  onLoad={handleImageReady}
+                />
               </div>
             </div>
 
-            {/* Bottom Status */}
-            <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-[#7a7a7a]">
-              <span className="text-[#2997ff] flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Kaizenstar Verified
-              </span>
-              <span className="font-mono">360° PRO SPEC</span>
-            </div>
-          </div>
-        </motion.div>
+            {/* BACK FACE (180 deg): Apple Pro Technical Spec Sheet */}
+            <div
+              style={{
+                backfaceVisibility: "hidden",
+                transform: "rotateY(180deg) translateZ(10px)",
+                transformStyle: "preserve-3d",
+              }}
+              className="absolute w-[320px] sm:w-[350px] h-[480px] rounded-[18px] p-6 bg-[#1d1d1f] border border-white/15 backdrop-blur-xl shadow-2xl flex flex-col justify-between overflow-hidden text-left"
+            >
+              {/* Top Spec Header */}
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#2997ff]" />
+                    <span className="text-[12px] font-semibold text-white tracking-tight">
+                      ENGINEERING SPEC
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono text-[#7a7a7a]">REV 2026.1</span>
+                </div>
 
-        {/* Floating Telemetry Badges (Apple Translucent Gray Chip Style) */}
+                <div className="mt-4">
+                  <h4 className="text-xl font-semibold text-white tracking-[-0.02em]">Shuaib B</h4>
+                  <p className="text-xs text-[#2997ff]">Software Engineer • .NET Core</p>
+                  <p className="text-[11px] text-[#cccccc] mt-1">1.7+ Yrs Enterprise Production</p>
+                </div>
+
+                {/* Architecture Matrix */}
+                <div className="mt-5 space-y-2.5 text-xs">
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-[10px] text-[#7a7a7a] uppercase tracking-wider block">Core Backend</span>
+                    <p className="text-white font-medium">ASP.NET Core Web API • C#</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-[10px] text-[#7a7a7a] uppercase tracking-wider block">Async Pipelines</span>
+                    <p className="text-white font-medium">Hangfire Background Processing</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-[10px] text-[#7a7a7a] uppercase tracking-wider block">Persistence & ORM</span>
+                    <p className="text-white font-medium">Dapper • PostgreSQL • MySQL</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-[10px] text-[#7a7a7a] uppercase tracking-wider block">Featured Product</span>
+                    <p className="text-[#2997ff] font-medium">FormatX SaaS (Angular 16)</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Status */}
+              <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-[#7a7a7a]">
+                <span className="text-[#2997ff] flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Kaizenstar Verified
+                </span>
+                <span className="font-mono">360° PRO SPEC</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Floating Telemetry Badges (Apple Translucent Gray Chip Style) with .hero-chip hooks */}
         
         {/* Top Left: Enterprise Core */}
         <motion.div
           style={{ x: chip1X, z: chip1Z }}
-          className="absolute top-14 -left-4 z-20 px-3.5 py-2 rounded-full bg-[#1d1d1f]/90 border border-white/15 backdrop-blur-md flex items-center gap-2.5 pointer-events-none"
+          className="absolute top-14 -left-4 z-20 pointer-events-none"
         >
-          <div className="w-2 h-2 rounded-full bg-[#2997ff]" />
-          <div>
-            <span className="text-[11px] font-normal text-white">ASP.NET Core Web API</span>
+          <div className="hero-chip-1 px-3.5 py-2 rounded-full bg-[#1d1d1f]/90 border border-white/15 backdrop-blur-md flex items-center gap-2.5 shadow-lg">
+            <div className="w-2 h-2 rounded-full bg-[#2997ff]" />
+            <div>
+              <span className="text-[11px] font-normal text-white">ASP.NET Core Web API</span>
+            </div>
           </div>
         </motion.div>
 
         {/* Middle Right: High-Performance Background Async */}
         <motion.div
           style={{ x: chip2X, z: chip2Z }}
-          className="absolute top-[48%] -right-4 z-20 px-3.5 py-2 rounded-full bg-[#1d1d1f]/90 border border-white/15 backdrop-blur-md flex items-center gap-2.5 pointer-events-none"
+          className="absolute top-[48%] -right-4 z-20 pointer-events-none"
         >
-          <div className="w-2 h-2 rounded-full bg-[#0066cc]" />
-          <div>
-            <span className="text-[11px] font-normal text-white">Hangfire Background Jobs</span>
+          <div className="hero-chip-2 px-3.5 py-2 rounded-full bg-[#1d1d1f]/90 border border-white/15 backdrop-blur-md flex items-center gap-2.5 shadow-lg">
+            <div className="w-2 h-2 rounded-full bg-[#0066cc]" />
+            <div>
+              <span className="text-[11px] font-normal text-white">Hangfire Background Jobs</span>
+            </div>
           </div>
         </motion.div>
 
         {/* Bottom Left: Clean Architecture Pattern */}
         <motion.div
           style={{ x: chip3X, z: chip3Z }}
-          className="absolute bottom-16 -left-2 z-20 px-3.5 py-2 rounded-full bg-[#1d1d1f]/90 border border-white/15 backdrop-blur-md flex items-center gap-2.5 pointer-events-none"
+          className="absolute bottom-16 -left-2 z-20 pointer-events-none"
         >
-          <div className="w-2 h-2 rounded-full bg-emerald-400" />
-          <div>
-            <span className="text-[11px] font-normal text-white">Clean Architecture & Dapper</span>
+          <div className="hero-chip-3 px-3.5 py-2 rounded-full bg-[#1d1d1f]/90 border border-white/15 backdrop-blur-md flex items-center gap-2.5 shadow-lg">
+            <div className="w-2 h-2 rounded-full bg-emerald-400" />
+            <div>
+              <span className="text-[11px] font-normal text-white">Clean Architecture & Dapper</span>
+            </div>
           </div>
         </motion.div>
       </div>
 
-      {/* 3D Interaction Control HUD Pill (Apple Minimalist Pill) */}
-      <div className="mt-2 flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md text-xs text-white/80 z-30">
+      {/* 3D Interaction Control HUD Pill (Apple Minimalist Pill) with .hero-hud-pill hook */}
+      <div className="hero-hud-pill mt-2 flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md text-xs text-white/80 z-30">
         <div className="flex items-center gap-2">
           <Rotate3d className="w-3.5 h-3.5 text-[#2997ff] animate-spin [animation-duration:9s]" />
           <span className="text-white/90 text-[12px]">
